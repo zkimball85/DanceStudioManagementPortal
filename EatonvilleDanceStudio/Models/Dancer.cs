@@ -26,5 +26,5 @@ public class Dancer
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "Dancer Date of Birth")]
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
 }

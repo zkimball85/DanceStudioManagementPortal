@@ -100,7 +100,7 @@ public class RegisterModel : PageModel
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Dancer Date of Birth")]
-        public DateTime DancerDOB { get; set; }
+        public DateTime? DancerDOB { get; set; }
     }
 
     public async Task OnGetAsync(string? returnUrl = null)
