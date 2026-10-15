@@ -1,11 +1,11 @@
 USE [master];
 GO
 
-ALTER AUTHORIZATION ON DATABASE::[EatonvilleDanceStudioDb] TO [sa];
+ALTER AUTHORIZATION ON DATABASE::[ApplicationDbContext] TO [sa];
 GO
 
 SELECT
-	name AS EatonvilleDanceStudioDb,
+	name AS ApplicationDbContext,
 	suser_sname(owner_sid) AS OwnerName
 FROM sys.databases
-WHERE name = 'EatonvilleDanceStudioDb';
+WHERE name = 'ApplicationDbContext';

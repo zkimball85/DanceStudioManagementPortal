@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EatonvilleDanceStudio.Migrations
 {
-    [DbContext(typeof(EatonvilleDanceStudioDb))]
-    [Migration("20261007030903_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20261011014127_AddIdentitySchema")]
+    partial class AddIdentitySchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
