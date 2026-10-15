@@ -97,16 +97,15 @@ body {
 }
 
 .card-neon {
-    background-color: var(--dark-surface) !important;
-    color: #f8f9fa !important;
-    border: 1px solid var(--neon-pink) !important;
-    box-shadow: 0 0 15px var(--neon-pink-glow);
+    background-color: var(--dark-surface, #121212) !important;
+    border: 1px solid #ff10f0 !important;
+    box-shadow: 0 0 15px rgba(255, 16, 240, 0.35) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-neon:hover {
     transform: translateY(-4px);
-    box-shadow: 0 0 25px rgba(255, 45, 149, 0.6);
+    box-shadow: 0 0 25px rgba(255, 16, 240, 0.6) !important;
 }
 
 .card-neon .card-header,
@@ -137,9 +136,8 @@ body {
 }
 
 .border-neon {
-    border: 1px solid;
-    border-color: #ff10f0;
-    box-shadow: 0 0 12px var(--neon-pink-glow);
+    border: 1px solid #ff10f0 !important;
+    box-shadow: 0 0 15px rgba(255, 16, 240, 0.35) !important;
 }
 
 .btn-outline-neon {
@@ -158,5 +156,5 @@ body {
 
 .hero-border {
     border: 2px solid #ff10f0 !important;
-    box-shadow: 0 0 20px rgba(255, 16, 240, 0.45);
+    box-shadow: 0 0 20px rgba(255, 16, 240, 0.45) !important;
 }
