@@ -36,8 +36,9 @@ body {
 
 /* glowing text */
 .text-neon {
-    color: #ff10f0;
+    color: var(--neon-pink) !important;
     text-shadow: 0 0 5px #ff10f0, 0 0 10px #ff10f0;
+    font-weight: 600;
 }
 
 /* glowing button */
@@ -86,4 +87,74 @@ body {
     color: #ff10f0;
     text-shadow: 0 0 5px #ff10f0;
     background-color: transparent;
+}
+
+/* Custom Neon Pink & Dark Card Theme */
+:root {
+    --neon-pink: #ff2d95;
+    --neon-pink-glow: rgba(255, 45, 149, 0.4);
+    --dark-surface: #121212;
+}
+
+.card-neon {
+    background-color: var(--dark-surface, #121212) !important;
+    border: 1px solid #ff10f0 !important;
+    box-shadow: 0 0 15px rgba(255, 16, 240, 0.35) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-neon:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px rgba(255, 16, 240, 0.6) !important;
+}
+
+.card-neon .card-header,
+.card-neon .card-footer {
+    background-color: rgba(255, 45, 149, 0.1) !important;
+    border-color: rgba(255, 45, 149, 0.3) !important;
+}
+
+.card-neon .card-title,
+.card-neon h3,
+.card-neon h4,
+.card-neon h5 {
+    color: var(--neon-pink) !important;
+    font-weight: 700;
+}
+
+.card-neon .btn-neon {
+    background-color: var(--neon-pink);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+}
+
+.card-neon .btn-neon:hover {
+    background-color: #e01b80;
+    color: #fff;
+    box-shadow: 0 0 10px var(--neon-pink);
+}
+
+.border-neon {
+    border: 1px solid #ff10f0 !important;
+    box-shadow: 0 0 15px rgba(255, 16, 240, 0.35) !important;
+}
+
+.btn-outline-neon {
+    color: var(--neon-pink);
+    border: 1px solid var(--neon-pink);
+    background-color: transparent;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-neon:hover{
+    background-color: var(--neon-pink);
+    color: #000;
+    box-shadow: 0 0 10px var(--neon-pink-glow);
+}
+
+.hero-border {
+    border: 2px solid #ff10f0 !important;
+    box-shadow: 0 0 20px rgba(255, 16, 240, 0.45) !important;
 }
