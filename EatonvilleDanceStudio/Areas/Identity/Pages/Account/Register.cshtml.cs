@@ -1,23 +1,17 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+// Areas/Identity/Pages/Account/Register.cshtml.cs
+// Handles user registration and immediately provisions the linked Parent and Dancer profiles
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using EatonvilleDanceStudio.Data;
+using EatonvilleDanceStudio.Models;
 
 namespace EatonvilleDanceStudio.Areas.Identity.Pages.Account;
 
@@ -29,13 +23,15 @@ public class RegisterModel : PageModel
     private readonly IUserEmailStore<ApplicationUser> _emailStore;
     private readonly ILogger<RegisterModel> _logger;
     private readonly IEmailSender _emailSender;
+    private readonly ApplicationDbContext _context;
 
     public RegisterModel(
         UserManager<ApplicationUser> userManager,
         IUserStore<ApplicationUser> userStore,
         SignInManager<ApplicationUser> signInManager,
         ILogger<RegisterModel> logger,
-        IEmailSender emailSender)
+        IEmailSender emailSender,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _userStore = userStore;
@@ -43,62 +39,69 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _emailSender = emailSender;
+        _context = context;
     }
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     [BindProperty]
     public InputModel Input { get; set; } = default!;
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public string? ReturnUrl { get; set; }
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public IList<AuthenticationScheme>? ExternalLogins { get; set; }
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class InputModel
     {
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = default!;
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = default!;
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string? ConfirmPassword { get; set; }
-    }
+        
+        [Required]
+        [Display(Name = "Parent First Name")]
+        public string FirstName { get; set; }
 
+        [Required]
+        [Display(Name = "Parent Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [Phone]
+        [Display(Name = "Primary Phone")]
+        public string PrimaryPhone { get; set; }
+
+        [Required]
+        [Display(Name = "Emergency Contact Name")]
+        public string EmergencyContactName { get; set; }
+
+        [Required]
+        [Phone]
+        [Display(Name = "Emergency Contact Phone")]
+        public string EmergencyContactPhone { get; set; }
+
+        [Required]
+        [Display(Name = "Dancer First Name")]
+        public string DancerFirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Dancer Last Name")]
+        public string DancerLastName { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Dancer Date of Birth")]
+        public DateTime? DancerDOB { get; set; }
+    }
 
     public async Task OnGetAsync(string? returnUrl = null)
     {
@@ -122,6 +125,32 @@ public class RegisterModel : PageModel
             {
                 _logger.LogInformation("User created a new account with password.");
 
+                // 1. Create and save the Parent Profile linked to the new Identity User
+                var parentProfile = new ParentProfile
+                {
+                    UserId = user.Id,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    PrimaryPhone = Input.PrimaryPhone,
+                    EmergencyContactName = Input.EmergencyContactName,
+                    EmergencyContactPhone = Input.EmergencyContactPhone
+                };
+
+                _context.ParentProfiles.Add(parentProfile);
+                await _context.SaveChangesAsync();
+
+                // 2. Create and save the initial Dancer linked to the Parent Profile
+                var dancer = new Dancer
+                {
+                    ParentProfileId = parentProfile.Id,
+                    FirstName = Input.DancerFirstName,
+                    LastName = Input.DancerLastName,
+                    DateOfBirth = Input.DancerDOB
+                };
+
+                _context.Dancers.Add(dancer);
+                await _context.SaveChangesAsync();
+
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -144,6 +173,7 @@ public class RegisterModel : PageModel
                     return LocalRedirect(returnUrl);
                 }
             }
+            
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
