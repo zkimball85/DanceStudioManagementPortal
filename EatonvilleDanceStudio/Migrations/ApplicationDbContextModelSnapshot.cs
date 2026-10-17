@@ -124,6 +124,10 @@ namespace EatonvilleDanceStudio.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AccountStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmergencyContactName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
