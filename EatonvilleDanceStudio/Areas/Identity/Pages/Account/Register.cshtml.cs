@@ -172,7 +172,7 @@ public class RegisterModel : PageModel
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
+                    return RedirectToPage("Login");
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);

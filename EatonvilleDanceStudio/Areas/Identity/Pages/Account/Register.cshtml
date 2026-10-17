@@ -1,4 +1,5 @@
 @page
+@using ServiceStack.Html
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -10,29 +11,90 @@
             <h1 class="text-center text-neon mb-4">@ViewData["Title"]</h1>
             
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3 fw-bold" role="alert"></div>
                 <p class="text-center text-light">Create a new account and join the studio!</p>
+                <hr class="border-secondary"/>
+                
                 <hr class="border-secondary" />
-                
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control form-control-dark" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="text-muted">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control form-control-dark" autocomplete="new-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="text-muted">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                
-                <div class="form-floating mb-4">
-                    <input asp-for="Input.ConfirmPassword" class="form-control form-control-dark" autocomplete="new-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.ConfirmPassword" class="text-muted">Confirm Password</label>
-                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                </div>
-                
+                    <h5 class="text-neon mb-3">Parent Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.FirstName" class="form-label text-neon">First Name</label>
+                            <input asp-for="Input.FirstName" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.LastName" class="form-label text-neon">Last Name</label>
+                            <input asp-for="Input.LastName" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.PrimaryPhone" class="form-label text-neon">Primary Phone</label>
+                        <input asp-for="Input.PrimaryPhone" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                        <span asp-validation-for="Input.PrimaryPhone" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.EmergencyContactName" class="form-label text-neon">Emergency Contact Name</label>
+                            <input asp-for="Input.EmergencyContactName" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.EmergencyContactName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.EmergencyContactPhone" class="form-label text-neon">Emergency Contact Phone</label>
+                            <input asp-for="Input.EmergencyContactPhone" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.EmergencyContactPhone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary" />
+                    <h5 class="text-neon mb-3">First Dancer Details</h5>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Input.DancerFirstName" class="form-label text-neon">Dancer First Name</label>
+                            <input asp-for="Input.DancerFirstName" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.DancerFirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Input.DancerLastName" class="form-label text-neon">Dancer Last Name</label>
+                            <input asp-for="Input.DancerLastName" class="form-control bg-dark text-light border-secondary" aria-required="true" />
+                            <span asp-validation-for="Input.DancerLastName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Input.DancerDob" class="form-label text-neon">Date of Birth</label>
+                            <input asp-for="Input.DancerDob" class="form-control bg-dark text-light border-secondary" aria-required="true" type="date" />
+                            <span asp-validation-for="Input.DancerDob" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary" />
+                    <h5 class="text-neon mb-3">Account Login Setup</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label text-neon">Email</label>
+                        <input asp-for="Input.Email" class="form-control bg-dark text-light border-secondary" autocomplete="username" aria-required="true" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label text-neon">Password</label>
+                        <input asp-for="Input.Password" class="form-control bg-dark text-light border-secondary" autocomplete="new-password" aria-required="true" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        <div class="form-text text-neon mt-1">
+                            Password must be at least 6 characters long and contain at least one number, one uppercase letter, and one special character (e.g., !#$%).
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Input.ConfirmPassword" class="form-label text-neon">Confirm Password</label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control bg-dark text-light border-secondary" autocomplete="new-password" aria-required="true" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+
                 <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-neon">Register</button>
             </form>
         </div>

@@ -43,12 +43,11 @@ public class ParentProfile
     [StringLength(20)]
     public required string EmergencyContactPhone { get; set; }
     
-    // Navigation property: a parent can have many dancers.
-    public ICollection<Dancer> Dancers { get; set; } = new List<Dancer>();
-
     [Required]
     [Display(Name = "Account Status")]
     [StringLength(10)]
     public required string AccountStatus { get; set; } = "Pending";
     
+    // Navigation property: a parent can have many dancers.
+    public ICollection<Dancer> Dancers { get; set; } = new List<Dancer>();
 }

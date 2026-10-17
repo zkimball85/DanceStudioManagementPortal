@@ -1,0 +1,55 @@
+@model EatonvilleDanceStudio.Models.Dancer
+@{
+    ViewData["Title"] = "Add Dancer";
+}
+
+<h2 class="text-neon mt-4 mb-4">Add a New Dancer</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card bg-dark text-light border-secondary">
+            <div class="card-body">
+                <form asp-action="AddDancer" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FirstName" class="form-label text-neon"></label>
+                        <input asp-for="FirstName" class="form-control bg-dark text-light border-secondary" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LastName" class="form-label text-neon"></label>
+                        <input asp-for="LastName" class="form-control bg-dark text-light border-secondary" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="form-label text-neon"></label>
+                        <input asp-for="DateOfBirth" class="form-control bg-dark text-light border-secondary" type="date" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="SkillLevel" class="form-label text-neon"></label>
+                        <select asp-for="SkillLevel" class="form-select bg-dark text-light border-secondary">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                        <span asp-validation-for="SkillLevel" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Dashboard" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-outline-success">Save Dancer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
