@@ -11,7 +11,6 @@ public class ParentProfile
     
     //Links the profile to the IdentityUser auth table
     [Required]
-    [StringLength(50)]
     public required string UserId { get; set; }
 
     [ForeignKey("UserId")]
@@ -30,7 +29,7 @@ public class ParentProfile
     [Required]
     [Phone]
     [Display(Name = "Primary Number")]
-    [StringLength(11)]
+    [StringLength(20)]
     public required string PrimaryPhone { get; set; }
     
     [Required]
@@ -41,7 +40,7 @@ public class ParentProfile
     [Required]
     [Phone]
     [Display(Name = "Emergency Contact Number")]
-    [StringLength(11)]
+    [StringLength(20)]
     public required string EmergencyContactPhone { get; set; }
     
     // Navigation property: a parent can have many dancers.

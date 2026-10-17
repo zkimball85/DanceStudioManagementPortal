@@ -68,24 +68,29 @@ public class RegisterModel : PageModel
         public string? ConfirmPassword { get; set; }
         
         [Required]
+        [StringLength(50)]
         [Display(Name = "Parent First Name")]
         public required string FirstName { get; set; }
 
         [Required]
+        [StringLength(50)]
         [Display(Name = "Parent Last Name")]
         public required string LastName { get; set; }
 
         [Required]
         [Phone]
+        [StringLength(20)]
         [Display(Name = "Primary Phone")]
         public required string PrimaryPhone { get; set; }
 
         [Required]
+        [StringLength(100)]
         [Display(Name = "Emergency Contact Name")]
         public required string EmergencyContactName { get; set; }
 
         [Required]
         [Phone]
+        [StringLength(20)]
         [Display(Name = "Emergency Contact Phone")]
         public required string EmergencyContactPhone { get; set; }
 
@@ -100,7 +105,7 @@ public class RegisterModel : PageModel
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Dancer Date of Birth")]
-        protected internal DateTime? DancerDob { get; }
+        public DateTime? DancerDob { get; set; }
     }
 
     public async Task OnGetAsync(string? returnUrl = null)
