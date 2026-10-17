@@ -11,34 +11,44 @@ public class ParentProfile
     
     //Links the profile to the IdentityUser auth table
     [Required]
-    public string UserId { get; set; }
-    
+    public required string UserId { get; set; }
+
     [ForeignKey("UserId")]
-    public ApplicationUser User { get; set; }
+    public required ApplicationUser? User { get; set; }
     
     [Required]
     [Display(Name = "First Name")]
-    public string FirstName { get; set; }
+    [StringLength(50)]
+    public required string FirstName { get; set; }
     
     [Required]
     [Display(Name = "Last Name")]
-    public string LastName { get; set; }
+    [StringLength(50)]
+    public required string LastName { get; set; }
     
     [Required]
     [Phone]
     [Display(Name = "Primary Number")]
-    public string PrimaryPhone { get; set; }
+    [StringLength(20)]
+    public required string PrimaryPhone { get; set; }
     
     [Required]
     [Display(Name = "Emergency Contact Name")]
-    public string EmergencyContactName { get; set; }
+    [StringLength(50)]
+    public required string EmergencyContactName { get; set; }
     
     [Required]
     [Phone]
     [Display(Name = "Emergency Contact Number")]
-    public string EmergencyContactPhone { get; set; }
+    [StringLength(20)]
+    public required string EmergencyContactPhone { get; set; }
     
     // Navigation property: a parent can have many dancers.
     public ICollection<Dancer> Dancers { get; set; } = new List<Dancer>();
 
+    [Required]
+    [Display(Name = "Account Status")]
+    [StringLength(10)]
+    public required string AccountStatus { get; set; } = "Pending";
+    
 }

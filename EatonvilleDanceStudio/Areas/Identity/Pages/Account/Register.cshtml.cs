@@ -68,39 +68,44 @@ public class RegisterModel : PageModel
         public string? ConfirmPassword { get; set; }
         
         [Required]
+        [StringLength(50)]
         [Display(Name = "Parent First Name")]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [Required]
+        [StringLength(50)]
         [Display(Name = "Parent Last Name")]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [Required]
         [Phone]
+        [StringLength(20)]
         [Display(Name = "Primary Phone")]
-        public string PrimaryPhone { get; set; }
+        public required string PrimaryPhone { get; set; }
 
         [Required]
+        [StringLength(100)]
         [Display(Name = "Emergency Contact Name")]
-        public string EmergencyContactName { get; set; }
+        public required string EmergencyContactName { get; set; }
 
         [Required]
         [Phone]
+        [StringLength(20)]
         [Display(Name = "Emergency Contact Phone")]
-        public string EmergencyContactPhone { get; set; }
+        public required string EmergencyContactPhone { get; set; }
 
         [Required]
         [Display(Name = "Dancer First Name")]
-        public string DancerFirstName { get; set; }
+        public required string DancerFirstName { get; set; }
 
         [Required]
         [Display(Name = "Dancer Last Name")]
-        public string DancerLastName { get; set; }
+        public required string DancerLastName { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Dancer Date of Birth")]
-        public DateTime? DancerDOB { get; set; }
+        public DateTime? DancerDob { get; set; }
     }
 
     public async Task OnGetAsync(string? returnUrl = null)
@@ -125,7 +130,7 @@ public class RegisterModel : PageModel
             {
                 _logger.LogInformation("User created a new account with password.");
 
-                // 1. Create and save the Parent Profile linked to the new Identity User
+                // Create and save the Parent Profile linked to the new Identity User
                 var parentProfile = new ParentProfile
                 {
                     UserId = user.Id,
@@ -133,19 +138,21 @@ public class RegisterModel : PageModel
                     LastName = Input.LastName,
                     PrimaryPhone = Input.PrimaryPhone,
                     EmergencyContactName = Input.EmergencyContactName,
-                    EmergencyContactPhone = Input.EmergencyContactPhone
+                    EmergencyContactPhone = Input.EmergencyContactPhone,
+                    AccountStatus = "Pending",
+                    User = null
                 };
 
                 _context.ParentProfiles.Add(parentProfile);
                 await _context.SaveChangesAsync();
 
-                // 2. Create and save the initial Dancer linked to the Parent Profile
+                // Create and save the initial Dancer linked to the Parent Profile
                 var dancer = new Dancer
                 {
                     ParentProfileId = parentProfile.Id,
                     FirstName = Input.DancerFirstName,
                     LastName = Input.DancerLastName,
-                    DateOfBirth = Input.DancerDOB
+                    DateOfBirth = Input.DancerDob
                 };
 
                 _context.Dancers.Add(dancer);
@@ -157,7 +164,7 @@ public class RegisterModel : PageModel
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    values: new { area = "Identity", userId, code, returnUrl },
                     protocol: Request.Scheme)!;
 
                 await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -165,13 +172,11 @@ public class RegisterModel : PageModel
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
                 }
-                else
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
-                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
             }
             
             foreach (var error in result.Errors)
