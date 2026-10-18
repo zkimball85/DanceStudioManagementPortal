@@ -10,6 +10,9 @@ namespace EatonvilleDanceStudio.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("UPDATE Dancers SET FirstName = LEFT(FirstName, 50) WHERE LEN(FirstName) > 50");
+            migrationBuilder.Sql("UPDATE Dancers SET LastName = LEFT(LastName, 50) WHERE LEN(LastName) > 50");
+            
             migrationBuilder.AlterColumn<string>(
                 name: "LastName",
                 table: "Dancers",
