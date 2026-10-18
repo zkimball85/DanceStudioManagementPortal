@@ -1,5 +1,6 @@
 using EatonvilleDanceStudio.Data;
 using EatonvilleDanceStudio.Models;
+using EatonvilleDanceStudio.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,33 +40,39 @@ public class ParentController : Controller
 
     public IActionResult AddDancer()
     {
-        return View();
+        return View(new AddDancerViewModel() { FirstName = "", LastName = "" });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddDancer(Dancer model)
+    public async Task<IActionResult> AddDancer(AddDancerViewModel input)
     {
         var userId = _userManager.GetUserId(User);
         var parentProfile = await _context.ParentProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (parentProfile == null) return NotFound();
 
-        // MVC will complain that ParentProfileId and Parent are missing from the HTML form. 
-        // We strip them from the validation state because we are setting them manually right here!
-        ModelState.Remove("ParentProfileId");
-        ModelState.Remove("Parent");
-        ModelState.Remove("ProfilePhotoPath"); // Handled later
-
         if (ModelState.IsValid)
         {
-            model.ParentProfileId = parentProfile.Id;
-            _context.Dancers.Add(model);
-            await _context.SaveChangesAsync();
+            // We manually map the safe fields from the Input Model to the Database Model
+            var newDancer = new Dancer
+            {
+                FirstName = input.FirstName,
+                LastName = input.LastName,
+                DateOfBirth = input.DateOfBirth,
+                SkillLevel = input.SkillLevel,
+
+                // These are set strictly by the server, totally immune to user forging
+                ParentProfileId = parentProfile.Id,
+                PhotoApprovalStatus = "None",
+                ProfilePhotoPath = null
+            };
             
+            _context.Dancers.Add(newDancer);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Dashboard));
         }
 
-        return View(model);
+        return View(input);
     }
 }
