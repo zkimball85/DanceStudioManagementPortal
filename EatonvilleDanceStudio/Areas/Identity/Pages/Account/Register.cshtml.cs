@@ -51,60 +51,43 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
+        [Required, EmailAddress, Display(Name = "Email")]
         public string Email { get; set; } = default!;
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Required,
+         StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
+             MinimumLength = 6), DataType(DataType.Password), Display(Name = "Password")]
         public string Password { get; set; } = default!;
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [DataType(DataType.Password), Display(Name = "Confirm password"),
+         Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string? ConfirmPassword { get; set; }
-        
-        [Required]
-        [StringLength(50)]
-        [Display(Name = "Parent First Name")]
+
+        [Required, StringLength(50), Display(Name = "Parent First Name")]
         public required string FirstName { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        [Display(Name = "Parent Last Name")]
+        [Required, StringLength(50), Display(Name = "Parent Last Name")]
         public required string LastName { get; set; }
 
-        [Required]
-        [Phone]
-        [StringLength(20)]
-        [Display(Name = "Primary Phone")]
+        [Required, Phone, StringLength(20), Display(Name = "Primary Phone")]
         public required string PrimaryPhone { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        [Display(Name = "Emergency Contact Name")]
+        [Required, StringLength(50, ErrorMessage = "The {0} must be at max {1} characters long."),
+         Display(Name = "Emergency Contact Name")]
         public required string EmergencyContactName { get; set; }
 
-        [Required]
-        [Phone]
-        [StringLength(20)]
-        [Display(Name = "Emergency Contact Phone")]
+        [Required, Phone, StringLength(20), Display(Name = "Emergency Contact Phone")]
         public required string EmergencyContactPhone { get; set; }
 
-        [Required]
-        [Display(Name = "Dancer First Name")]
+        [Required, StringLength(50, ErrorMessage = "The {0} must be at max {1} characters long."),
+         Display(Name = "Dancer First Name")]
         public required string DancerFirstName { get; set; }
 
-        [Required]
-        [Display(Name = "Dancer Last Name")]
+        [Required, StringLength(50, ErrorMessage = "The {0} must be at max {1} characters long."),
+         Display(Name = "Dancer Last Name")]
         public required string DancerLastName { get; set; }
 
-        [Required]
-        [DataType(DataType.Date)]
-        [Display(Name = "Dancer Date of Birth")]
+        [Required, DataType(DataType.Date), Display(Name = "Dancer Date of Birth")]
         public DateTime? DancerDob { get; set; }
     }
 
@@ -172,7 +155,7 @@ public class RegisterModel : PageModel
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
+                    return RedirectToPage("Login");
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
