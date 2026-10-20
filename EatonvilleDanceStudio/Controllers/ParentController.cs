@@ -36,19 +36,18 @@ public class ParentController : Controller
     {
         var userId = _userManager.GetUserId(User);
         
-        // We use ThenInclude to chain down into the Dancers' Enrollments and Classes
+        // Use a Filtered Include to only pull active enrollments from the database
         var parentProfile = await _context.ParentProfiles
             .Include(p => p.Dancers)
-            .ThenInclude(d => d.Enrollments)
+            .ThenInclude(d => d.Enrollments.Where(e => e.Status == "Enrolled" || e.Status == "Waitlisted"))
             .ThenInclude(e => e.DanceClass)
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (parentProfile == null) return NotFound("Parent profile not found.");
 
-        // Flatten all enrollments from all dancers in the household into one list
+        // Flatten the already-filtered enrollments into one list for the UI
         var familyEnrollments = parentProfile.Dancers
             .SelectMany(d => d.Enrollments)
-            .Where(e => e.Status == "Enrolled" || e.Status == "Waitlisted")
             .ToList();
 
         var viewModel = new ParentDashboardViewModel
