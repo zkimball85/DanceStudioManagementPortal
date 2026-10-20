@@ -78,6 +78,18 @@ public class ParentController : Controller
         return View(viewModel);
     }
     
+    // GET
+    /// <summary>
+    /// Renders the form for adding a new dancer to the parent's profile.
+    /// The form allows input of dancer details such as first name, last name, date of birth, and skill level.
+    /// </summary>
+    /// <returns>A view representing the add dancer form with an empty model.</returns>
+    
+    public IActionResult AddDancer()
+    {
+        return View(new AddDancerViewModel { FirstName = "", LastName = "" });
+    }
+    
     // POST 
     /// <summary>
     /// Adds a new dancer associated with the authenticated parent's profile,
