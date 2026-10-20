@@ -7,7 +7,11 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-neon mb-0">Family Hub</h1>
-        <p class="text-light mb-0">Account: <span class="badge bg-success">@Model.Profile.AccountStatus</span></p>
+        <p class="text-light mb-0">Account: 
+            <span class="badge @(Model.Profile.AccountStatus == "Approved" ? "bg-success" : "bg-warning text-dark")">
+                @Model.Profile.AccountStatus
+            </span>
+        </p>
     </div>
 
     <div class="row g-4">
