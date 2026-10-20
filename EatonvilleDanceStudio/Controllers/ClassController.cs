@@ -28,6 +28,11 @@ public class ClassController : Controller
         
         if (parentProfile == null) return NotFound("Parent profile not found");
 
+        if (parentProfile.AccountStatus != "Approved")
+        {
+            return Unauthorized("Your account must be approved by the studio director before you can browse classes.");
+        }
+
         var classes = await _context.DanceClasses.ToListAsync();
 
         var viewModel = new ClassBrowseViewModel
@@ -55,6 +60,11 @@ public class ClassController : Controller
         if (parentProfile == null || !parentProfile.Dancers.Any(d => d.Id == dancerId))
         {
             return Unauthorized("You do not have permission to enroll this dancer.");
+        }
+
+        if (parentProfile.AccountStatus != "Approved")
+        {
+            return Unauthorized("Your account must be approved by the studio director before you can enroll in classes.");
         }
         
         // Prevent double enrollment
