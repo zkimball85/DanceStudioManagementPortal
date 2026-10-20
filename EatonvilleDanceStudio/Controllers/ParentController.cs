@@ -58,21 +58,9 @@ public class ParentController : Controller
             EnrolledClasses = familyEnrollments,
             
             // Mock data for the UI hub until we build the admin tools for these
-            Announcements = new List<string> 
-            { 
-                "Fall Season starts Sept 1st!", 
-                "Costume fees due next Friday." 
-            },
-            UpcomingEvents = new List<string> 
-            { 
-                "Winter Recital - Dec 15", 
-                "Studio Photo Day - Nov 10" 
-            },
-            CompetitionPlacements = new List<string> 
-            { 
-                "1st Place - Regional Hip Hop (Zoey)", 
-                "Gold - Lyrical Solo (Zoey)" 
-            }
+            Announcements = new List<string>(),
+            UpcomingEvents = new List<string>(),
+            CompetitionPlacements = new List<string>()
         };
 
         return View(viewModel);
