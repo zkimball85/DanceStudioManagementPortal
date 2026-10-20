@@ -42,7 +42,9 @@ public class ParentController : Controller
     {
         return View(new AddDancerViewModel() { FirstName = "", LastName = "" });
     }
-
+    
+    // POST 
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddDancer(AddDancerViewModel input)

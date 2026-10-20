@@ -1,0 +1,70 @@
+@model EatonvilleDanceStudio.ViewModels.ClassBrowseViewModel
+
+@{
+    ViewData["Title"] = "Class Registration Portal";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center text-neon mb-4">Browse Classes</h1>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success bg-dark text-success border-success fw-bold">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger bg-dark text-danger border-danger fw-bold">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    <div class="row">
+        @if (!Model.AvailableClasses.Any())
+        {
+            <div class="col-12 text-center text-light mt-5">
+                <h4>No classes are currently scheduled for the upcoming season. Check back soon!</h4>
+            </div>
+        }
+        else
+        {
+            @foreach (var danceClass in Model.AvailableClasses)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card card-dark h-100 shadow-lg border-secondary">
+                        <div class="card-body">
+                            <h4 class="card-title text-neon">@danceClass.ClassName</h4>
+                            <p class="text-light small mb-2">@danceClass.Description</p>
+                            <hr class="border-secondary"/>
+                            <p class="text-light mb-1"><strong>Ages:</strong>@danceClass.MinimumAge - @danceClass.MaximumAge</p>
+                            <p class="text-light mb-1"><strong>Level:</strong>@danceClass.RequiredSkillLevel</p>
+                            <p class="text-light mb-1"><strong>Schedule:</strong>@danceClass.DayOfWeek at @danceClass.StartTime.ToString(@"hh\:mm")</p>
+                        </div>
+                        
+                        <div class="card-footer border-secondary bg-transparent">
+                            @if (Model.MyDancers.Any())
+                            {
+                                <form asp-controller="Class" asp-action="Enroll" method="post" class="d-flex align-items-center">
+                                    <input type="hidden" name="classId" value="@danceClass.Id" />
+                                    <select name="dancerId" class="form-select bg-dark text-light border-secondary me-2" required>
+                                        <option value="">Select Dancer...</option>
+                                        @foreach (var dancer in Model.MyDancers)
+                                        {
+                                            <option value="@dancer.Id">@dancer.FirstName @dancer.LastName</option>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn btn-neon btn-sm">Enroll</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <p class="text-danger small mb-0">Please add a dancer to your profile to enroll.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
