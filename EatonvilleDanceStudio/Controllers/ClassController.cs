@@ -19,7 +19,7 @@ public class ClassController : Controller
         _context = context;
         _userManager = userManager;
     }
-    
+
     // GET: Class
     /// <summary>
     /// Displays a list of available dance classes and the parent's associated dancers.
@@ -28,12 +28,13 @@ public class ClassController : Controller
     /// </summary>
     /// <returns>An IActionResult that renders a view populated with available dance classes
     /// and the parent's dancers, or an error response if the parent profile is not found or unauthorized.</returns>
-    
+
     public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
-        var parentProfile = await _context.ParentProfiles.Include(p => p.Dancers).FirstOrDefaultAsync(p => p.UserId == userId);
-        
+        var parentProfile = await _context.ParentProfiles.Include(p => p.Dancers)
+            .FirstOrDefaultAsync(p => p.UserId == userId);
+
         if (parentProfile == null) return NotFound("Parent profile not found");
 
         if (parentProfile.AccountStatus != "Approved")
@@ -48,10 +49,10 @@ public class ClassController : Controller
             AvailableClasses = classes,
             MyDancers = parentProfile.Dancers.ToList()
         };
-        
+
         return View(viewModel);
     }
-    
+
     // POST
     /// <summary>
     /// Enrolls a dancer into a specified dance class.
@@ -62,13 +63,13 @@ public class ClassController : Controller
     /// <param name="dancerId">The unique identifier of the dancer to be enrolled.</param>
     /// <returns>An IActionResult that redirects to the index page with a success or error message,
     /// or an error response if the operation fails validation checks or encounters an issue.</returns>
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Enroll(int classId, int dancerId)
     {
         var userId = _userManager.GetUserId(User);
-        
+
         var parentProfile = await _context.ParentProfiles
             .Include(p => p.Dancers)
             .FirstOrDefaultAsync(p => p.UserId == userId);
@@ -80,11 +81,13 @@ public class ClassController : Controller
 
         if (parentProfile.AccountStatus != "Approved")
         {
-            return Unauthorized("Your account must be approved by the studio director before you can enroll in classes.");
+            return Unauthorized(
+                "Your account must be approved by the studio director before you can enroll in classes.");
         }
 
         // Start a strict transaction to prevent concurrent race conditions
-        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
         try
         {
@@ -119,12 +122,12 @@ public class ClassController : Controller
 
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
-            
+
             // 5. Lock it in
             await transaction.CommitAsync();
 
-            TempData["SuccessMessage"] = enrollmentStatus == "Enrolled" 
-                ? "Successfully enrolled in class!" 
+            TempData["SuccessMessage"] = enrollmentStatus == "Enrolled"
+                ? "Successfully enrolled in class!"
                 : "Class is full. Dancer has been added to the waitlist.";
         }
         catch (Exception)
@@ -135,3 +138,4 @@ public class ClassController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+}
