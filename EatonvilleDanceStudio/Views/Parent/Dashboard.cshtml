@@ -15,15 +15,48 @@
     </div>
 
     <div class="row g-4">
+        
         <!-- Left Column: Heavy Data (Classes and Dancers) -->
         <div class="col-lg-8">
+
+            <!-- Account Contact Info -->
+            <div class="card card-dark shadow-lg border-secondary mb-4">
+                <div class="card-header border-secondary bg-transparent">
+                    <h4 class="text-neon mb-0">Contact Profile</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Primary Contact -->
+                        <div class="col-md-6 border-end border-secondary">
+                            <h6 class="text-neon mb-2">Primary Contact</h6>
+                            <p class="text-light mb-1"><strong>Name:</strong> @Model.Profile.FirstName @Model.Profile.LastName</p>
+                            <p class="text-light mb-0"><strong>Phone:</strong> @Model.Profile.PrimaryPhone</p>
+                        </div>
+                        <!-- Emergency Contact -->
+                        <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
+                            <h6 class="text-muted mb-2">Emergency Contact</h6>
+                            <p class="text-light mb-1"><strong>Name:</strong> @Model.Profile.EmergencyContactName</p>
+                            <p class="text-light mb-0"><strong>Phone:</strong> @Model.Profile.EmergencyContactPhone</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Enrolled Classes Roster -->
             <div class="card card-dark shadow-lg border-secondary mb-4">
-                <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
+                < class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
                     <h4 class="text-neon mb-0">Current Enrollments</h4>
-                    <a asp-controller="Class" asp-action="Index" class="btn btn-outline-neon btn-sm border-neon text-neon">Browse Classes</a>
-                </div>
+                    <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
+                        <h4 class="text-neon mb-0">Current Enrollments</h4>
+                        @if (Model.Profile.AccountStatus == "Approved")
+                        {
+                            <a asp-controller="Class" asp-action="Index" class="btn btn-outline-neon btn-sm border-neon text-neon">Browse Classes</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-secondary btn-sm text-muted border-secondary" disabled title="Pending Director Approval">Browse Classes (Locked)</button>
+                        }
+                    </div>                
                 <div class="card-body p-0">
                     @if (!Model.EnrolledClasses.Any())
                     {
@@ -36,27 +69,27 @@
                         <div class="table-responsive">
                             <table class="table table-dark table-hover mb-0 align-middle">
                                 <thead>
-                                    <tr class="border-secondary">
-                                        <th class="text-neon ps-4">Dancer</th>
-                                        <th class="text-neon">Class</th>
-                                        <th class="text-neon">Schedule</th>
-                                        <th class="text-neon pe-4">Status</th>
-                                    </tr>
+                                <tr class="border-secondary">
+                                    <th class="text-neon ps-4">Dancer</th>
+                                    <th class="text-neon">Class</th>
+                                    <th class="text-neon">Schedule</th>
+                                    <th class="text-neon pe-4">Status</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var enrollment in Model.EnrolledClasses)
-                                    {
-                                        <tr class="border-secondary">
-                                            <td class="ps-4">@enrollment.Dancer?.FirstName</td>
-                                            <td>@enrollment.DanceClass?.ClassName</td>
-                                            <td class="text-light small">@enrollment.DanceClass?.DayOfWeek @@@enrollment.DanceClass?.StartTime.ToString(@"hh\:mm")</td>
-                                            <td class="pe-4">
-                                                <span class="badge @(enrollment.Status == "Enrolled" ? "bg-success" : "bg-warning text-dark")">
-                                                    @enrollment.Status
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    }
+                                @foreach (var enrollment in Model.EnrolledClasses)
+                                {
+                                    <tr class="border-secondary">
+                                        <td class="ps-4">@enrollment.Dancer?.FirstName</td>
+                                        <td>@enrollment.DanceClass?.ClassName</td>
+                                        <td class="text-light small">@enrollment.DanceClass?.DayOfWeek @@@enrollment.DanceClass?.StartTime.ToString(@"hh\:mm")</td>
+                                        <td class="pe-4">
+                                            <span class="badge @(enrollment.Status == "Enrolled" ? "bg-success" : "bg-warning text-dark")">
+                                                @enrollment.Status
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                         </div>
@@ -94,7 +127,7 @@
 
         <!-- Right Column: Informational Feeds -->
         <div class="col-lg-4">
-            
+
             <!-- Announcements -->
             <div class="card card-dark shadow-lg border-secondary mb-4">
                 <div class="card-header border-secondary bg-transparent">
