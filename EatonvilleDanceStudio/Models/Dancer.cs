@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EatonvilleDanceStudio.Models;
 
+/// <summary>
+/// Represents a dancer enrolled at Eatonville Dance Studio.
+/// </summary>
+/// <remarks>
+/// This class includes properties for identifying a dancer, associating them with a parent profile,
+/// detailing their skill level, and managing their photo and enrollment information.
+/// </remarks>
+
 public class Dancer
 {
     [Key]
@@ -40,4 +48,7 @@ public class Dancer
     
     [StringLength(20)]
     public string PhotoApprovalStatus { get; set; } = "None"; // None, Pending, Approved, Rejected
+    
+    // Navigation property for enrollments, representing the dancer's enrollments in one or more dance classes.
+    public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

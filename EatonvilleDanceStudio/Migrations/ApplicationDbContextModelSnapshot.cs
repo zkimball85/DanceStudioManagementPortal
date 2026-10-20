@@ -87,6 +87,52 @@ namespace EatonvilleDanceStudio.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("EatonvilleDanceStudio.Models.DanceClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DayOfWeek")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("MaximumAge")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinimumAge")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequiredSkillLevel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DanceClasses");
+                });
+
             modelBuilder.Entity("EatonvilleDanceStudio.Models.Dancer", b =>
                 {
                     b.Property<int>("Id")
@@ -129,6 +175,37 @@ namespace EatonvilleDanceStudio.Migrations
                     b.HasIndex("ParentProfileId");
 
                     b.ToTable("Dancers");
+                });
+
+            modelBuilder.Entity("EatonvilleDanceStudio.Models.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DanceClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DancerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DanceClassId");
+
+                    b.HasIndex("DancerId");
+
+                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("EatonvilleDanceStudio.Models.ParentProfile", b =>
@@ -328,6 +405,25 @@ namespace EatonvilleDanceStudio.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("EatonvilleDanceStudio.Models.Enrollment", b =>
+                {
+                    b.HasOne("EatonvilleDanceStudio.Models.DanceClass", "DanceClass")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("DanceClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EatonvilleDanceStudio.Models.Dancer", "Dancer")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("DancerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DanceClass");
+
+                    b.Navigation("Dancer");
+                });
+
             modelBuilder.Entity("EatonvilleDanceStudio.Models.ParentProfile", b =>
                 {
                     b.HasOne("EatonvilleDanceStudio.Data.ApplicationUser", "User")
@@ -388,6 +484,16 @@ namespace EatonvilleDanceStudio.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EatonvilleDanceStudio.Models.DanceClass", b =>
+                {
+                    b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("EatonvilleDanceStudio.Models.Dancer", b =>
+                {
+                    b.Navigation("Enrollments");
                 });
 
             modelBuilder.Entity("EatonvilleDanceStudio.Models.ParentProfile", b =>
