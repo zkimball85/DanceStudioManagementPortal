@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EatonvilleDanceStudio.Controllers;
 
+/// <summary>
+/// ParentController handles interactions related to parental user functionality within the application.
+/// This includes retrieving and managing parent profiles, associated dancers, and their enrollments.
+/// </summary>
+
 [Authorize] // Locks this down to only logged-in users
 public class ParentController : Controller
 {
@@ -20,30 +25,66 @@ public class ParentController : Controller
         _userManager = userManager;
     }
     
+    // GET: /Parent/Dashboard
+    /// <summary>
+    /// Displays the parent dashboard, providing an overview of the parent's profile,
+    /// dancers, enrollments, announcements, events, and competition placements.
+    /// </summary>
+    /// <returns>An asynchronous result that renders the parent dashboard view.</returns>
+    
     public async Task<IActionResult> Dashboard()
     {
-        // Get the currently logged-in user's Identity ID
         var userId = _userManager.GetUserId(User);
         
-        // Find their linked ParentProfile AND bring along all their Dancers
+        // We use ThenInclude to chain down into the Dancers' Enrollments and Classes
         var parentProfile = await _context.ParentProfiles
             .Include(p => p.Dancers)
+            .ThenInclude(d => d.Enrollments)
+            .ThenInclude(e => e.DanceClass)
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
-        if (parentProfile == null)
+        if (parentProfile == null) return NotFound("Parent profile not found.");
+
+        // Flatten all enrollments from all dancers in the household into one list
+        var familyEnrollments = parentProfile.Dancers
+            .SelectMany(d => d.Enrollments)
+            .Where(e => e.Status == "Enrolled" || e.Status == "Waitlisted")
+            .ToList();
+
+        var viewModel = new ParentDashboardViewModel
         {
-            return NotFound("Parent profile not found. Please complete registration.");
-        }
+            Profile = parentProfile,
+            Dancers = parentProfile.Dancers.ToList(),
+            EnrolledClasses = familyEnrollments,
+            
+            // Mock data for the UI hub until we build the admin tools for these
+            Announcements = new List<string> 
+            { 
+                "Fall Season starts Sept 1st!", 
+                "Costume fees due next Friday." 
+            },
+            UpcomingEvents = new List<string> 
+            { 
+                "Winter Recital - Dec 15", 
+                "Studio Photo Day - Nov 10" 
+            },
+            CompetitionPlacements = new List<string> 
+            { 
+                "1st Place - Regional Hip Hop (Zoey)", 
+                "Gold - Lyrical Solo (Zoey)" 
+            }
+        };
 
-        return View(parentProfile);
-    }
-
-    public IActionResult AddDancer()
-    {
-        return View(new AddDancerViewModel() { FirstName = "", LastName = "" });
+        return View(viewModel);
     }
     
     // POST 
+    /// <summary>
+    /// Adds a new dancer associated with the authenticated parent's profile,
+    /// using the provided input data and ensuring model validation.
+    /// </summary>
+    /// <param name="input">The data required to create a new dancer, including first name, last name, date of birth, and skill level.</param>
+    /// <returns>A task that represents the asynchronous operation. Returns a redirect to the dashboard upon success, or the input form view on validation failure.</returns>
     
     [HttpPost]
     [ValidateAntiForgeryToken]
