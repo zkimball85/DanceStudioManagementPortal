@@ -19,8 +19,16 @@ public class ClassController : Controller
         _context = context;
         _userManager = userManager;
     }
-
+    
     // GET: Class
+    /// <summary>
+    /// Displays a list of available dance classes and the parent's associated dancers.
+    /// Ensures that the user's account is approved before allowing access to the classes.
+    /// Retrieves the parent profile, associated dancers, and available dance classes from the database.
+    /// </summary>
+    /// <returns>An IActionResult that renders a view populated with available dance classes
+    /// and the parent's dancers, or an error response if the parent profile is not found or unauthorized.</returns>
+    
     public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
@@ -44,15 +52,23 @@ public class ClassController : Controller
         return View(viewModel);
     }
     
-    // POST:
-
+    // POST
+    /// <summary>
+    /// Enrolls a dancer into a specified dance class.
+    /// Validates the user's permissions, account status,
+    /// and class capacity before proceeding with the enrollment.
+    /// </summary>
+    /// <param name="classId">The unique identifier of the dance class to enroll in.</param>
+    /// <param name="dancerId">The unique identifier of the dancer to be enrolled.</param>
+    /// <returns>An IActionResult that redirects to the index page with a success or error message,
+    /// or an error response if the operation fails validation checks or encounters an issue.</returns>
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Enroll(int classId, int dancerId)
     {
         var userId = _userManager.GetUserId(User);
         
-        // Security Check
         var parentProfile = await _context.ParentProfiles
             .Include(p => p.Dancers)
             .FirstOrDefaultAsync(p => p.UserId == userId);
@@ -66,31 +82,56 @@ public class ClassController : Controller
         {
             return Unauthorized("Your account must be approved by the studio director before you can enroll in classes.");
         }
-        
-        // Prevent double enrollment
 
-        var alreadyEnrolled =
-            await _context.Enrollments.AnyAsync(e => e.DanceClassId == classId && e.DancerId == dancerId);
+        // Start a strict transaction to prevent concurrent race conditions
+        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-        if (alreadyEnrolled)
+        try
         {
-            TempData["ErrorMessage"] = "Dancer is already enrolled in this class.";
-            return RedirectToAction(nameof(Index));
+            // 1. Prevent Double Enrollment
+            var alreadyEnrolled = await _context.Enrollments
+                .AnyAsync(e => e.DanceClassId == classId && e.DancerId == dancerId);
+
+            if (alreadyEnrolled)
+            {
+                TempData["ErrorMessage"] = "Dancer is already enrolled or waitlisted in this class.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // 2. Load the Class to check Capacity
+            var danceClass = await _context.DanceClasses
+                .Include(c => c.Enrollments)
+                .FirstOrDefaultAsync(c => c.Id == classId);
+
+            if (danceClass == null) return NotFound("Class not found.");
+
+            // 3. Enforce Capacity & Assign Status
+            var currentActiveEnrollments = danceClass.Enrollments.Count(e => e.Status == "Enrolled");
+            var enrollmentStatus = currentActiveEnrollments >= danceClass.Capacity ? "Waitlisted" : "Enrolled";
+
+            // 4. Create the Enrollment
+            var enrollment = new Enrollment
+            {
+                DanceClassId = classId,
+                DancerId = dancerId,
+                Status = enrollmentStatus
+            };
+
+            _context.Enrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
+            
+            // 5. Lock it in
+            await transaction.CommitAsync();
+
+            TempData["SuccessMessage"] = enrollmentStatus == "Enrolled" 
+                ? "Successfully enrolled in class!" 
+                : "Class is full. Dancer has been added to the waitlist.";
         }
-        
-        //Create enrollment
-
-        var enrollment = new Enrollment
+        catch (Exception)
         {
-            DanceClassId = classId,
-            DancerId = dancerId,
-            Status = "Enrolled"
-        };
+            await transaction.RollbackAsync();
+            TempData["ErrorMessage"] = "An error occurred while processing your enrollment. Please try again.";
+        }
 
-        _context.Enrollments.Add(enrollment);
-        await _context.SaveChangesAsync();
-        
-        TempData["SuccessMessage"] = "Dancer enrolled successfully.";
         return RedirectToAction(nameof(Index));
     }
-}
