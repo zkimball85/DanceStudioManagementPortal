@@ -26,18 +26,39 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        
                         <!-- Primary Contact -->
                         <div class="col-md-6 border-end border-secondary">
                             <h6 class="text-neon mb-2">Primary Contact</h6>
                             <p class="text-light mb-1"><strong>Name:</strong> @Model.Profile.FirstName @Model.Profile.LastName</p>
                             <p class="text-light mb-0"><strong>Phone:</strong> @Model.Profile.PrimaryPhone</p>
                         </div>
+
                         <!-- Emergency Contact -->
                         <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
                             <h6 class="text-muted mb-2">Emergency Contact</h6>
                             <p class="text-light mb-1"><strong>Name:</strong> @Model.Profile.EmergencyContactName</p>
                             <p class="text-light mb-0"><strong>Phone:</strong> @Model.Profile.EmergencyContactPhone</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financials / Payment -->
+            <div class="card card-dark shadow-lg border-secondary mb-4">
+                <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
+                    <h4 class="text-neon mb-0">Financials</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-light mb-1"><strong>Current Balance:</strong> <span class="text-danger">$50.00</span></p>
+                            <small class="text-muted">Due by the 1st of the month</small>
+                        </div>
+                        <form asp-controller="Payment" asp-action="Checkout" method="post">
+                            <!-- Passing 5000 cents ($50.00) for testing -->
+                            <button type="submit" class="btn btn-neon">Pay Tuition Securely</button>
+                        </form>
                     </div>
                 </div>
             </div>
