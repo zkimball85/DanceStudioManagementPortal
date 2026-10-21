@@ -14,4 +14,10 @@ public class ParentDashboardViewModel
     public List<string> Announcements { get; set; } = new();
     public List<string> UpcomingEvents { get; set; } = new();
     public List<string> CompetitionPlacements { get; set; } = new();
+    
+    public decimal CurrentBalance { get; set; }
+    
+    // Gemini Supplied Code
+    public List<LedgerEntry> RecentCharges { get; set; } = new();
+    public List<LedgerEntry> RecentPayments { get; set; } = new();
 }
