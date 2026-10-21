@@ -1,3 +1,6 @@
+<!-- Gemini Supplied Code -->
+
+
 @model EatonvilleDanceStudio.ViewModels.ParentDashboardViewModel
 
 @{
@@ -26,7 +29,6 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        
                         <!-- Primary Contact -->
                         <div class="col-md-6 border-end border-secondary">
                             <h6 class="text-neon mb-2">Primary Contact</h6>
@@ -44,40 +46,113 @@
                 </div>
             </div>
             
-            <!-- Financials / Payment -->
+            <!-- NEW INTEGRATED FINANCIAL LEDGER -->
             <div class="card card-dark shadow-lg border-secondary mb-4">
-                <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
-                    <h4 class="text-neon mb-0">Financials</h4>
+                <div class="card-header border-secondary bg-transparent">
+                    <h4 class="text-neon mb-0">Financial Ledger</h4>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <!-- Balance and Pay Button -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
                         <div>
-                            <p class="text-light mb-1"><strong>Current Balance:</strong> <span class="text-danger">$50.00</span></p>
-                            <small class="text-muted">Due by the 1st of the month</small>
+                            <p class="text-light mb-1"><strong>Current Balance:</strong></p>
+                            <h2 class="text-danger mb-0">@Model.CurrentBalance.ToString("C")</h2>
                         </div>
-                        <form asp-controller="Payment" asp-action="Checkout" method="post">
-                            <!-- Passing 5000 cents ($50.00) for testing -->
-                            <button type="submit" class="btn btn-neon">Pay Tuition Securely</button>
-                        </form>
+                        @if (Model.CurrentBalance > 0)
+                        {
+                            <form asp-controller="Payment" asp-action="Checkout" method="post">
+                                <button type="submit" class="btn btn-neon btn-lg">Pay Balance Securely</button>
+                            </form>
+                        }
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Charges Table -->
+                        <div class="col-md-6">
+                            <h6 class="text-light mb-2">Recent Charges</h6>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-sm table-hover mb-0 align-middle">
+                                    <thead>
+                                        <tr class="border-secondary">
+                                            <th class="text-neon">Date</th>
+                                            <th class="text-neon">Description</th>
+                                            <th class="text-neon text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.RecentCharges.Any())
+                                        {
+                                            foreach (var charge in Model.RecentCharges)
+                                            {
+                                                <tr class="border-secondary">
+                                                    <td class="text-muted small">@charge.TransactionDate.ToShortDateString()</td>
+                                                    <td>@charge.Description</td>
+                                                    <td class="text-end">@charge.Amount.ToString("C")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-2">No recent charges.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Payments Table -->
+                        <div class="col-md-6">
+                            <h6 class="text-light mb-2">Payment History</h6>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-sm table-hover mb-0 align-middle">
+                                    <thead>
+                                        <tr class="border-secondary">
+                                            <th class="text-neon">Date</th>
+                                            <th class="text-neon">Description</th>
+                                            <th class="text-neon text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.RecentPayments.Any())
+                                        {
+                                            foreach (var payment in Model.RecentPayments)
+                                            {
+                                                <tr class="border-secondary">
+                                                    <td class="text-muted small">@payment.TransactionDate.ToShortDateString()</td>
+                                                    <td>@payment.Description</td>
+                                                    <td class="text-success text-end">@payment.Amount.ToString("C")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-2">No payments received.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Enrolled Classes Roster -->
+            <!-- Enrolled Classes Roster (Fixed broken HTML tags here) -->
             <div class="card card-dark shadow-lg border-secondary mb-4">
-                < class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
+                <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
                     <h4 class="text-neon mb-0">Current Enrollments</h4>
-                    <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
-                        <h4 class="text-neon mb-0">Current Enrollments</h4>
-                        @if (Model.Profile.AccountStatus == "Approved")
-                        {
-                            <a asp-controller="Class" asp-action="Index" class="btn btn-outline-neon btn-sm border-neon text-neon">Browse Classes</a>
-                        }
-                        else
-                        {
-                            <button class="btn btn-outline-secondary btn-sm text-muted border-secondary" disabled title="Pending Director Approval">Browse Classes (Locked)</button>
-                        }
-                    </div>                
+                    @if (Model.Profile.AccountStatus == "Approved")
+                    {
+                        <a asp-controller="Class" asp-action="Index" class="btn btn-outline-neon btn-sm border-neon text-neon">Browse Classes</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary btn-sm text-muted border-secondary" disabled title="Pending Director Approval">Browse Classes (Locked)</button>
+                    }
+                </div>                
                 <div class="card-body p-0">
                     @if (!Model.EnrolledClasses.Any())
                     {

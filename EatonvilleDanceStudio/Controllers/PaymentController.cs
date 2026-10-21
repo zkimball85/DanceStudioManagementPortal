@@ -4,6 +4,7 @@ using EatonvilleDanceStudio.Settings;
 using EatonvilleDanceStudio.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -108,17 +109,22 @@ public class PaymentController : Controller
         return new StatusCodeResult(303);
     }
     
-    // GET
+    // GET: /Payment/Success  **Gemini Supplied Code**
 
     /// <summary>
-    /// Handles the successful completion of a payment session and redirects the user to the parent dashboard.
+    /// Handles the completion of a payment process by validating the session ID and retrieving the payment status from Stripe.
+    /// Displays appropriate success or error messages to the user and redirects to the parent dashboard.
     /// </summary>
     /// <param name="session_id">
-    /// The unique identifier for the payment session provided by the payment gateway.
+    /// The Stripe session ID generated during the checkout process.
+    /// Used to validate and retrieve the payment status from Stripe.
     /// </param>
     /// <returns>
-    /// A redirect to the "Dashboard" action in the "Parent" controller, along with a success message stored in TempData.
+    /// An action result that redirects to the parent dashboard.
+    /// If the payment is successful, a success message is displayed.
+    /// If the payment validation fails, an error message is displayed.
     /// </returns>
+    
     public async Task<IActionResult> Success(string session_id)
     {
         // 1. Block immediate manual navigation without a session token
@@ -136,8 +142,36 @@ public class PaymentController : Controller
             // 3. Verify the actual payment status
             if (session.PaymentStatus == "paid")
             {
-                // TEMPORARY: In Issue #20, we will update the DB ledger here.
-                TempData["SuccessMessage"] = "Payment successful! Thank you for your payment.";
+                // 4. Retrieve the parent's User ID from the metadata we embedded during Checkout
+                if (session.Metadata.TryGetValue("UserId", out string parentId))
+                {
+                    // 5. Anti-Refresh Check: Make sure we haven't already credited this exact Stripe session
+                    // (Requires: using Microsoft.EntityFrameworkCore;)
+                    bool alreadyRecorded = await _context.LedgerEntries
+                        .AnyAsync(l => l.Description.Contains(session.Id));
+
+                    if (!alreadyRecorded)
+                    {
+                        // 6. Convert Stripe's amount (cents) to dollars and make it negative for a ledger credit
+                        decimal paymentAmount = (session.AmountTotal ?? 0) / 100m;
+                        decimal creditAmount = -Math.Abs(paymentAmount); 
+
+                        // 7. Create the new ledger entry
+                        var paymentEntry = new LedgerEntry
+                        {
+                            ParentId = parentId,
+                            TransactionDate = DateTime.UtcNow,
+                            Description = $"Stripe Payment (Ref: {session.Id})", 
+                            Amount = creditAmount,
+                            Category = "Payment"
+                        };
+
+                        _context.LedgerEntries.Add(paymentEntry);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Payment successful! Your account has been credited.";
             }
             else
             {
