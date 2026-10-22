@@ -1,0 +1,77 @@
+@model EatonvilleDanceStudio.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Studio Director Registration";
+}
+
+<!-- This Razor view creates the registration form. 
+     It binds directly to RegisterViewModel and uses ASP.NET Tag Helpers 
+     to automatically generate the HTML inputs and validation spans. -->
+
+<div class="container mt-5">
+    <h2>Register a New Studio Account</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-controller="Account" asp-action="Register" method="post">
+                
+                <div asp-validation-summary="ModelOnly" 
+                     class="text-danger"></div>
+                
+                <!-- Email Field -->
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" 
+                          class="text-danger"></span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group mb-3">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" 
+                          class="text-danger"></span>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group mb-3">
+                    <label asp-for="ConfirmPassword" 
+                           class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" 
+                          class="text-danger"></span>
+                </div>
+
+                <!-- The ToS Checkbox Shield -->
+                <div class="form-check mb-4">
+                    <input asp-for="HasAgreedToTerms" 
+                           class="form-check-input" />
+                    
+                    <label asp-for="HasAgreedToTerms" 
+                           class="form-check-label">
+                        I have read and agree to the 
+                        <a asp-controller="Home" asp-action="TermsOfService" 
+                           target="_blank">Terms of Service</a>
+                    </label>
+                    
+                    <!-- This span catches the strict [Range] validation -->
+                    <span asp-validation-for="HasAgreedToTerms" 
+                          class="text-danger d-block mt-1"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <input type="submit" value="Register Account" 
+                           class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- This section injects the jQuery validation scripts so the ToS 
+     checkbox shows the red error instantly without a page reload -->
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
