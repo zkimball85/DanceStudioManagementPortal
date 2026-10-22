@@ -31,35 +31,40 @@ namespace EatonvilleDanceStudio.Controllers
         }
 
         // This catches the form submission. If the ToS 
-        // checkbox is empty, ModelState.IsValid will evaluate to false, 
-        // and we immediately kick them back to the view with the red error.
+        // checkbox is empty, ModelState.IsValid will evaluate to false.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                ApplicationUser user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email
                 };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                IdentityResult result = await _userManager.CreateAsync(
+                    user, model.Password);
 
                 if (result.Succeeded)
                 {
+                    // BOOM: Stamp them as a Director before signing in
+                    await _userManager.AddToRoleAsync(user, "Director");
+                    
+                    // Now sign them in (assuming you have _signInManager)
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    
                     return RedirectToAction("Index", "Home");
                 }
 
-                foreach (var error in result.Errors)
+                // If creation failed (e.g., password too weak), surface errors
+                foreach (IdentityError error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we hit this line, validation failed (e.g., ToS unchecked or registration error).
             // Redisplay the form with their data so they can see the errors.
             return View(model);
         }
