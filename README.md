@@ -71,7 +71,7 @@ The development lifecycle is broken down into 10 core Epics, managed via GitHub 
 **Zac Kimball**
 *   **Role:** Lead Developer & Software Architect
 *   **Stack:** .NET 10 / C# 14 / SQL Server
-*   **Organization:** Clover Park Technical College
+*   **Organization:** Zeus Digital Designs
 *   **GitHub:** [@ZacharyKimball](https://github.com/zkimball85) 
 
 ---
