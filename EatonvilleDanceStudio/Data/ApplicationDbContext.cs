@@ -27,4 +27,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<DanceClass> DanceClasses { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
     public DbSet<LedgerEntry> LedgerEntries { get; set; }
-}
+    
+    // Tracks instructor worked hours for payroll
+    public DbSet<InstructorTimeLog> InstructorTimeLogs { get; set; }
+    
+    // Tracks instructor availability for private lessons
+    public DbSet<PrivateLessonBlock> PrivateLessonBlocks { get; set; }
+}       
