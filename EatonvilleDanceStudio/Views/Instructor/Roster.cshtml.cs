@@ -6,6 +6,5 @@ public class Roster : PageModel
 {
     public void OnGet()
     {
-        
     }
 }
