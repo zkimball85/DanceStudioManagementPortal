@@ -37,5 +37,4 @@ public class AttendanceRecord
     [StringLength(250)]
     [Display(Name = " Instructor Notes")]
     public string? Notes { get; set; }
-    
 }
