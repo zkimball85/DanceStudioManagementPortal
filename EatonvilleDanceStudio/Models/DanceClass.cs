@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using EatonvilleDanceStudio.Data;
 
 namespace EatonvilleDanceStudio.Models;
 
@@ -43,6 +44,11 @@ public class DanceClass
     public TimeSpan EndTime { get; set; }
     
     // Navigation Properties
+    
+    // Links the class to a specific instructor
+    public string? InstructorId { get; set; }
+    [System.ComponentModel.DataAnnotations.Schema.ForeignKey("InstructorId")]
+    public ApplicationUser? Instructor { get; set; }
     
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }
