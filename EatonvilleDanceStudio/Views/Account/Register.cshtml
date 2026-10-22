@@ -72,6 +72,16 @@
 
 <!-- This section injects the jQuery validation scripts so the ToS 
      checkbox shows the red error instantly without a page reload -->
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+     @section Scripts {
+         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+         <script>
+        // High-level summary: Wires up the custom MustBeTrue attribute 
+        // to jQuery client-side validation so it works instantly.
+        $.validator.addMethod("mustbetrue", function (value, element) {
+            return $(element).is(":checked");
+        });
+        
+        $.validator.unobtrusive.adapters.addBool("mustbetrue");
+    </script>
+     }

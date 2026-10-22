@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using EatonvilleDanceStudio.Attributes;
 
 namespace EatonvilleDanceStudio.ViewModels
 {
@@ -29,10 +30,11 @@ namespace EatonvilleDanceStudio.ViewModels
 
         // The Range attribute strictly forces the boolean 
         // to be "true" instead of accepting "false".
+        // We replaced Range with our custom attribute to fix the 
+        // jQuery client-side validation casing bug.
         [Display(Name = "I agree to the Terms of Service")]
-        [Range(typeof(bool), "true", "true", 
-            ErrorMessage = "You must agree to the Terms of " +
-                           "Service to register.")]
+        [MustBeTrue(ErrorMessage = "You must agree to the Terms of " +
+                                   "Service to register.")]
         public bool HasAgreedToTerms { get; set; }
     }
 }
