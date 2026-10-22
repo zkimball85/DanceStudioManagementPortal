@@ -1,4 +1,4 @@
-# Eatonville Dance Studio Management Portal
+# Dance Studio Management Portal
 
 ![Status: In Development](https://img.shields.io/badge/Status-In%20Development-blue)
 ![Framework: .NET 10 MVC](https://img.shields.io/badge/Framework-.NET%2010%20MVC-purple)
