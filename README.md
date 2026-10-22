@@ -77,26 +77,7 @@ The development lifecycle is broken down into 10 core Epics, managed via GitHub 
 ---
 
 ## License
+Copyright © 2026 Zachary S. Kimball / Zeus Digital Designs. All Rights Reserved.
 
-Copyright © 2026 Zachary S. Kimball. 
-This project is licensed under the MIT License.
-
-### Granted Rights & Permissions
-Permission is granted to any person obtaining a copy of this software and associated documentation files to deal in the Software without restriction, including without limitation the rights to:
-
-Use and run the software for personal or commercial purposes.
-
-Copy and distribute the codebase.
-
-Modify, adapt, merge, or build upon the source code.
-
-Publish, sublicense, or sell copies of the software.
-
-### Conditions
-Copyright Notice: The above copyright notice and this permission grant must be included in all copies or substantial portions of the Software.
-
-### Liability & Warranty Disclaimer
-No Warranty: The software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
-
-### Limitation of Liability:
-In no event shall the author or copyright holder be liable for any claim, damages, or other liability arising from, out of, or in connection with the software or the use or other dealings in the software.
+**Proprietary and Confidential.** 
+This repository and its contents are closed-source. Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited.
