@@ -45,7 +45,9 @@
                                     {
                                         <tr class="border-secondary">
                                             <td class="ps-4 text-light">@c.StartTime.ToString(@"hh\:mm") - @c.EndTime.ToString(@"hh\:mm")</td>
-                                            <td><strong>@c.ClassName</strong></td>
+                                            <td>
+                                                <a asp-action="Roster" asp-route-id="@c.Id" class="text-neon text-decoration-none fw-bold">@c.ClassName &rarr;</a>
+                                            </td>
                                             <td class="text-muted">@c.MinimumAge - @c.MaximumAge</td>
                                             <td><span class="badge bg-secondary text-light">@c.RequiredSkillLevel</span></td>
                                             <td class="pe-4 text-end">@c.Enrollments.Count / @c.Capacity</td>
