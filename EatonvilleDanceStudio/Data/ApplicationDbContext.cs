@@ -33,4 +33,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     
     // Tracks instructor availability for private lessons
     public DbSet<PrivateLessonBlock> PrivateLessonBlocks { get; set; }
+    
+    // Tracks daily attendance for enrolled students
+    public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
 }       

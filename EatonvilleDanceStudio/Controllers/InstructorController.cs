@@ -178,4 +178,109 @@ public class InstructorController : Controller
 
         return RedirectToAction(nameof(Dashboard));
     }
+    // GET: /Instructor/Roster/{id}
+
+    /// <summary>
+    /// Displays the roster view for a specific dance class and date. This method retrieves
+    /// the enrolled dancers of the class, checks for any existing attendance records for the
+    /// specified date, and prepares the attendance list for display.
+    /// </summary>
+    /// <param name="id">The unique identifier of the dance class.</param>
+    /// <param name="date">The date for which the roster is being displayed. Defaults to today's date if not provided.</param>
+    /// <returns>The roster view populated with the dance class details, selected date, and attendance list.</returns>
+    
+    public async Task<IActionResult> Roster(int id, DateTime? date)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return Unauthorized();
+
+        var selectedDate = date ?? DateTime.Today;
+
+        // Fetch the class, ensuring we also grab the Enrollments and the actual Dancers
+        var danceClass = await _context.DanceClasses
+            .Include(c => c.Enrollments)
+                .ThenInclude(e => e.Dancer)
+            .FirstOrDefaultAsync(c => c.Id == id && c.InstructorId == userId);
+
+        if (danceClass == null) return NotFound();
+
+        // Look up if attendance was already taken for this date
+        var existingRecords = await _context.AttendanceRecords
+            .Where(a => a.Enrollment!.DanceClassId == id && a.Date == selectedDate)
+            .ToDictionaryAsync(a => a.EnrollmentId);
+
+        var attendanceList = new List<AttendanceRecord>();
+
+        // Build the roster row by row
+        foreach (var enrollment in danceClass.Enrollments)
+        {
+            if (existingRecords.TryGetValue(enrollment.Id, out var existingRecord))
+            {
+                // Attendance was already taken, load it
+                existingRecord.Enrollment = enrollment; // Attach for the view
+                attendanceList.Add(existingRecord);
+            }
+            else
+            {
+                // No attendance taken yet, create a fresh "Present" record
+                attendanceList.Add(new AttendanceRecord
+                {
+                    EnrollmentId = enrollment.Id,
+                    Enrollment = enrollment, // Attach for the view
+                    Date = selectedDate,
+                    Status = "Present"
+                });
+            }
+        }
+
+        var viewModel = new ClassRosterViewModel
+        {
+            DanceClass = danceClass,
+            ClassDate = selectedDate,
+            AttendanceList = attendanceList
+        };
+
+        return View(viewModel);
+    }
+
+    // POST: /Instructor/SubmitAttendance
+
+    /// <summary>
+    /// Handles the submission of attendance records for a specific dance class on a given date.
+    /// Updates existing attendance records or adds new ones based on the submitted data,
+    /// and saves the changes to the database.
+    /// </summary>
+    /// <param name="model">The view model containing the dance class details, class date,
+    /// and the list of attendance records to be processed.</param>
+    /// <returns>A redirect to the roster page for the specified class and date, or an
+    /// unauthorized response if the user is not logged in.</returns>
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitAttendance(ClassRosterViewModel model)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return Unauthorized();
+
+        // Loop through the submitted form data
+        foreach (var record in model.AttendanceList)
+        {
+            if (record.Id > 0)
+            {
+                // This record already exists in the database; update it
+                _context.AttendanceRecords.Update(record);
+            }
+            else
+            {
+                // This is a brand new record being saved for the first time
+                _context.AttendanceRecords.Add(record);
+            }
+        }
+        
+        await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Attendance successfully saved!";
+        
+        // Redirect back to the roster page for the date they just edited
+        return RedirectToAction(nameof(Roster), new { id = model.DanceClass.Id, date = model.ClassDate.ToString("yyyy-MM-dd") });
+    }
 }
