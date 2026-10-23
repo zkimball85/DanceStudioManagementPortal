@@ -27,7 +27,7 @@ namespace EatonvilleDanceStudio.ViewModels
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "The password " +
                                             "and confirmation do not match.")]
-        public string ConfirmPassword { get; set; }
+        public required string ConfirmPassword { get; set; }
 
         // The Range attribute strictly forces the boolean 
         // to be "true" instead of accepting "false".
