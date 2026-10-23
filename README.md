@@ -5,7 +5,7 @@
 ![Database: SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red)
 
 ## Overview
-The Eatonville Dance Studio Management Portal is a full-stack Web application designed to eliminate the logistical chaos of running a modern dance studio. It replaces scattered spreadsheets and paper forms with a centralized platform for class registration, secure tuition billing, competition tracking, and direct communication.
+The Dance Studio Management Portal is a full-stack Web application designed to eliminate the logistical chaos of running a modern dance studio. It replaces scattered spreadsheets and paper forms with a centralized platform for class registration, secure tuition billing, competition tracking, and direct communication.
 
 Built using .NET 10 ASP.NET Core MVC, the platform serves three distinct user roles: **Parents/Dancers**, **Instructors**, and **Studio Directors**, providing each with a tailored dashboard and role-based authorization to manage their specific responsibilities.
 
